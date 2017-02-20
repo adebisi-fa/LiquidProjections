@@ -1,3 +1,4 @@
+using FluidCaching;
 using Raven.Client;
 using Raven.Client.Embedded;
 
@@ -7,12 +8,9 @@ namespace LiquidProjections.RavenDB.Specs
     {
         public IDocumentStore Build()
         {
-            IDocumentStore store = new EmbeddableDocumentStore
-            {
-                RunInMemory = true,
-            }.Initialize();
-
-            return store;
+            var store = new EmbeddableDocumentStore { RunInMemory = true };
+            store.Configuration.Storage.Voron.AllowOn32Bits = true;
+            return store.Initialize();
         }
     }
 }

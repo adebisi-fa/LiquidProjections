@@ -47,6 +47,7 @@
     </Compile>
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="InMemoryEventStore.cs" />
+    <Compile Include="PassThroughTrackingStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

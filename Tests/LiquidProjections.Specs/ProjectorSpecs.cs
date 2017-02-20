@@ -6,6 +6,7 @@ using Chill;
 using Chill.StateBuilders;
 
 using FluentAssertions;
+using LiquidProjections.Testing;
 using Xunit;
 
 namespace LiquidProjections.Specs
@@ -25,6 +26,7 @@ namespace LiquidProjections.Specs
 
                     // UseThe cannot be used here due to a bug in Chill.
                     Container.Set<IEventMapBuilder<ProjectionContext>>(Events, string.Empty);
+                    Container.Set<ITrackingStore>(new PassThroughTrackingStore());
                 });
             }
 

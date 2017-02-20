@@ -60,6 +60,7 @@
     <Compile Include="EventMapBuilder.cs" />
     <Compile Include="Dispatcher.cs" />
     <Compile Include="EventEnvelope.cs" />
+    <Compile Include="IHaveIdentity.cs" />
     <Compile Include="MapBuilding\ICreateEventActionBuilder.cs" />
     <Compile Include="MapBuilding\ICreateIfDoesNotExistEventActionBuilder.cs" />
     <Compile Include="IEventMap.cs" />
@@ -70,6 +71,12 @@
     <Compile Include="MapBuilding\IUpdateEventActionBuilder.cs" />
     <Compile Include="MapBuilding\ICreateOrUpdateEventActionBuilder.cs" />
     <Compile Include="MapBuilding\IUpdateIfExistsEventActionBuilder.cs" />
+    <Compile Include="Persistence\EventMapProjectionPersistenceConfigurator.cs" />
+    <Compile Include="Persistence\Extensions.cs" />
+    <Compile Include="Persistence\IPersistenceFactory.cs" />
+    <Compile Include="Persistence\IProjectionPersistence.cs" />
+    <Compile Include="Persistence\ProjectorState.cs" />
+    <Compile Include="Persistence\TrackingStore.cs" />
     <Compile Include="ProjectionContext.cs" />
     <Compile Include="Projector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

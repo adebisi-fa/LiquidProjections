@@ -9,13 +9,18 @@ namespace LiquidProjections
     {
         private readonly IEventMap<ProjectionContext> map;
         private readonly IReadOnlyList<Projector> children;
+        private readonly ITrackingStore trackingStore;
+        private string _checkpointId;
 
-        public Projector(IEventMapBuilder<ProjectionContext> eventMapBuilder, IEnumerable<Projector> children = null)
+        public Projector(IEventMapBuilder<ProjectionContext> eventMapBuilder, IEnumerable<Projector> children = null, ITrackingStore trackingStore = null)
         {
             if (eventMapBuilder == null)
             {
                 throw new ArgumentNullException(nameof(eventMapBuilder));
             }
+
+            // Null-check INTENTIONALLY avoided so as not to break existing API
+            this.trackingStore = trackingStore;
 
             SetupHandlers(eventMapBuilder);
             map = eventMapBuilder.Build();
@@ -39,10 +44,18 @@ namespace LiquidProjections
         /// </param>
         public async Task Handle(IReadOnlyList<Transaction> transactions)
         {
+            if (transactions == null)
+            {
+                throw new ArgumentNullException(nameof(transactions));
+            };
+
             foreach (Transaction transaction in transactions)
             {
                 await ProjectTransaction(transaction);
             }
+
+            if (this.trackingStore != null)
+                await this.trackingStore.SaveCheckpoint(CheckpointId, transactions.Last().Checkpoint);
         }
 
         private async Task ProjectTransaction(Transaction transaction)
@@ -93,6 +106,21 @@ namespace LiquidProjections
 
             // There is no way to identify the child projector when an exception happens so we don't handle exceptions here.
             await map.Handle(anEvent, context);
+        }
+
+        /// <summary>
+        /// Uniquely identifies a projector's state during persistence. Projectors with the same 'CheckpointId' shares the same state. 
+        /// </summary>
+        public string CheckpointId
+        {
+            get { return _checkpointId ?? typeof(Projector).Name; }
+            set { _checkpointId = value; }
+        }
+
+        public Projector WithCheckpointId(string checkpointId)
+        {
+            CheckpointId = checkpointId;
+            return this;
         }
     }
 }

@@ -55,6 +55,17 @@ namespace LiquidProjections.MapBuilding
         /// <summary>
         /// Continues configuring a handler for events of type <typeparamref name="TEvent"/>.
         /// Specifies that a new projection with the specified key will be created for the event handler.
+        /// An exception will be thrown if a projection with such key already exists.
+        /// </summary>
+        /// <param name="getKey">The delegate that determines the projection key for the event.</param>
+        /// <returns>
+        /// <see cref="ICreateEventActionBuilder{TEvent,TProjection,TContext}"/> that allows to continue configuring the handler.
+        /// </returns>
+        ICreateEventActionBuilder<TEvent, TProjection, TContext> AsCreateOf(Func<TEvent, TContext, TKey> getKey);
+
+        /// <summary>
+        /// Continues configuring a handler for events of type <typeparamref name="TEvent"/>.
+        /// Specifies that a new projection with the specified key will be created for the event handler.
         /// The event will not be handled by the handler if a projection with such key already exists.
         /// </summary>
         /// <param name="getKey">The delegate that determines the projection key for the event.</param>
@@ -62,8 +73,19 @@ namespace LiquidProjections.MapBuilding
         /// <see cref="ICreateIfDoesNotExistEventActionBuilder{TEvent,TProjection,TContext}"/>
         /// that allows to continue configuring the handler.
         /// </returns>
-        ICreateIfDoesNotExistEventActionBuilder<TEvent, TProjection, TContext> AsCreateIfDoesNotExistOf(
-            Func<TEvent, TKey> getKey);
+        ICreateIfDoesNotExistEventActionBuilder<TEvent, TProjection, TContext> AsCreateIfDoesNotExistOf(Func<TEvent, TKey> getKey);
+
+        /// <summary>
+        /// Continues configuring a handler for events of type <typeparamref name="TEvent"/>.
+        /// Specifies that a new projection with the specified key will be created for the event handler.
+        /// The event will not be handled by the handler if a projection with such key already exists.
+        /// </summary>
+        /// <param name="getKey">The delegate that determines the projection key for the event.</param>
+        /// <returns>
+        /// <see cref="ICreateIfDoesNotExistEventActionBuilder{TEvent,TProjection,TContext}"/>
+        /// that allows to continue configuring the handler.
+        /// </returns>
+        ICreateIfDoesNotExistEventActionBuilder<TEvent, TProjection, TContext> AsCreateIfDoesNotExistOf(Func<TEvent, TContext, TKey> getKey);
 
         /// <summary>
         /// Continues configuring a handler for events of type <typeparamref name="TEvent"/>.
@@ -79,6 +101,17 @@ namespace LiquidProjections.MapBuilding
         /// <summary>
         /// Continues configuring a handler for events of type <typeparamref name="TEvent"/>.
         /// Specifies that the projection with the specified key will be updated by the event handler.
+        /// An exception will be thrown if a projection with such key does not exist.
+        /// </summary>
+        /// <param name="getKey">The delegate that determines the projection key for the event.</param>
+        /// <returns>
+        /// <see cref="IUpdateEventActionBuilder{TEvent,TProjection,TContext}"/> that allows to continue configuring the handler.
+        /// </returns>
+        IUpdateEventActionBuilder<TEvent, TProjection, TContext> AsUpdateOf(Func<TEvent, TContext, TKey> getKey);
+
+        /// <summary>
+        /// Continues configuring a handler for events of type <typeparamref name="TEvent"/>.
+        /// Specifies that the projection with the specified key will be updated by the event handler.
         /// The event will not be handled by the handler if the projection with such key does not exist.
         /// </summary>
         /// <param name="getKey">The delegate that determines the projection key for the event.</param>
@@ -86,6 +119,17 @@ namespace LiquidProjections.MapBuilding
         /// <see cref="IUpdateEventActionBuilder{TEvent,TProjection,TContext}"/> that allows to continue configuring the handler.
         /// </returns>
         IUpdateIfExistsEventActionBuilder<TEvent, TProjection, TContext> AsUpdateIfExistsOf(Func<TEvent, TKey> getKey);
+
+        /// <summary>
+        /// Continues configuring a handler for events of type <typeparamref name="TEvent"/>.
+        /// Specifies that the projection with the specified key will be updated by the event handler.
+        /// The event will not be handled by the handler if the projection with such key does not exist.
+        /// </summary>
+        /// <param name="getKey">The delegate that determines the projection key for the event.</param>
+        /// <returns>
+        /// <see cref="IUpdateEventActionBuilder{TEvent,TProjection,TContext}"/> that allows to continue configuring the handler.
+        /// </returns>
+        IUpdateIfExistsEventActionBuilder<TEvent, TProjection, TContext> AsUpdateIfExistsOf(Func<TEvent, TContext, TKey> getKey);
 
         /// <summary>
         /// Continues configuring a handler for events of type <typeparamref name="TEvent"/>.
@@ -100,6 +144,18 @@ namespace LiquidProjections.MapBuilding
         ICreateOrUpdateEventActionBuilder<TEvent, TProjection, TContext> AsCreateOrUpdateOf(Func<TEvent, TKey> getKey);
 
         /// <summary>
+        /// Continues configuring a handler for events of type <typeparamref name="TEvent"/>.
+        /// Specifies that a new projection with the specified key will be created for the event handler.
+        /// If a projection with such key already exists, it will be updated by the event handler instead.
+        /// </summary>
+        /// <param name="getKey">The delegate that determines the projection key for the event.</param>
+        /// <returns>
+        /// <see cref="ICreateOrUpdateEventActionBuilder{TEvent,TProjection,TContext}"/>
+        /// that allows to continue configuring the handler.
+        /// </returns>
+        ICreateOrUpdateEventActionBuilder<TEvent, TProjection, TContext> AsCreateOrUpdateOf(Func<TEvent, TContext, TKey> getKey);
+
+        /// <summary>
         /// Finishes configuring a handler for events of type <typeparamref name="TEvent"/>.
         /// Specifies that the projection with the specified key will be deleted when handling the event.
         /// An exception will be thrown if a projection with such key does not exist.
@@ -110,10 +166,26 @@ namespace LiquidProjections.MapBuilding
         /// <summary>
         /// Finishes configuring a handler for events of type <typeparamref name="TEvent"/>.
         /// Specifies that the projection with the specified key will be deleted when handling the event.
+        /// An exception will be thrown if a projection with such key does not exist.
+        /// </summary>
+        /// <param name="getKey">The delegate that determines the projection key for the event.</param>
+        void AsDeleteOf(Func<TEvent, TContext, TKey> getKey);
+
+        /// <summary>
+        /// Finishes configuring a handler for events of type <typeparamref name="TEvent"/>.
+        /// Specifies that the projection with the specified key will be deleted when handling the event.
         /// The event will not be handled if the projection with such key does not exist.
         /// </summary>
         /// <param name="getKey">The delegate that determines the projection key for the event.</param>
         void AsDeleteIfExistsOf(Func<TEvent, TKey> getKey);
+
+        /// <summary>
+        /// Finishes configuring a handler for events of type <typeparamref name="TEvent"/>.
+        /// Specifies that the projection with the specified key will be deleted when handling the event.
+        /// The event will not be handled if the projection with such key does not exist.
+        /// </summary>
+        /// <param name="getKey">The delegate that determines the projection key for the event.</param>
+        void AsDeleteIfExistsOf(Func<TEvent, TContext, TKey> getKey);
 
         /// <summary>
         /// Continues configuring a handler for events of type <typeparamref name="TEvent"/>.

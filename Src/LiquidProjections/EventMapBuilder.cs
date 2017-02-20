@@ -273,6 +273,16 @@ namespace LiquidProjections
                 return new CreateEventActionBuilder(this, getKey);
             }
 
+            public ICreateEventActionBuilder<TEvent, TProjection, TContext> AsCreateOf(Func<TEvent, TContext, TKey> getKey)
+            {
+                if (getKey == null)
+                {
+                    throw new ArgumentNullException(nameof(getKey));
+                }
+
+                return new CreateEventActionBuilder(this, getKey);
+            }
+
             public ICreateIfDoesNotExistEventActionBuilder<TEvent, TProjection, TContext> AsCreateIfDoesNotExistOf(
                 Func<TEvent, TKey> getKey)
             {
@@ -284,7 +294,28 @@ namespace LiquidProjections
                 return new CreateIfDoesNotExistEventActionBuilder(this, getKey);
             }
 
+            public ICreateIfDoesNotExistEventActionBuilder<TEvent, TProjection, TContext> AsCreateIfDoesNotExistOf(
+                Func<TEvent, TContext, TKey> getKey)
+            {
+                if (getKey == null)
+                {
+                    throw new ArgumentNullException(nameof(getKey));
+                }
+
+                return new CreateIfDoesNotExistEventActionBuilder(this, getKey);
+            }
+
             public ICreateOrUpdateEventActionBuilder<TEvent, TProjection, TContext> AsCreateOrUpdateOf(Func<TEvent, TKey> getKey)
+            {
+                if (getKey == null)
+                {
+                    throw new ArgumentNullException(nameof(getKey));
+                }
+
+                return new CreateOrUpdateEventActionBuilder(this, getKey);
+            }
+
+            public ICreateOrUpdateEventActionBuilder<TEvent, TProjection, TContext> AsCreateOrUpdateOf(Func<TEvent, TContext, TKey> getKey)
             {
                 if (getKey == null)
                 {
@@ -305,6 +336,17 @@ namespace LiquidProjections
                     eventMapBuilder.projectionDeletionHandler(getKey(anEvent), context, optionsForDelete));
             }
 
+            public void AsDeleteOf(Func<TEvent, TContext, TKey> getKey)
+            {
+                if (getKey == null)
+                {
+                    throw new ArgumentNullException(nameof(getKey));
+                }
+
+                innerBuilder.Add((anEvent, context) =>
+                    eventMapBuilder.projectionDeletionHandler(getKey(anEvent, context), context, optionsForDelete));
+            }
+
             public void AsDeleteIfExistsOf(Func<TEvent, TKey> getKey)
             {
                 if (getKey == null)
@@ -314,6 +356,17 @@ namespace LiquidProjections
 
                 innerBuilder.Add((anEvent, context) =>
                     eventMapBuilder.projectionDeletionHandler(getKey(anEvent), context, optionsForDeleteIfExists));
+            }
+
+            public void AsDeleteIfExistsOf(Func<TEvent, TContext, TKey> getKey)
+            {
+                if (getKey == null)
+                {
+                    throw new ArgumentNullException(nameof(getKey));
+                }
+
+                innerBuilder.Add((anEvent, context) =>
+                    eventMapBuilder.projectionDeletionHandler(getKey(anEvent, context), context, optionsForDeleteIfExists));
             }
 
             public IUpdateEventActionBuilder<TEvent, TProjection, TContext> AsUpdateOf(Func<TEvent, TKey> getKey)
@@ -326,7 +379,27 @@ namespace LiquidProjections
                 return new UpdateEventActionBuilder(this, getKey);
             }
 
+            public IUpdateEventActionBuilder<TEvent, TProjection, TContext> AsUpdateOf(Func<TEvent, TContext, TKey> getKey)
+            {
+                if (getKey == null)
+                {
+                    throw new ArgumentNullException(nameof(getKey));
+                }
+
+                return new UpdateEventActionBuilder(this, getKey);
+            }
+
             public IUpdateIfExistsEventActionBuilder<TEvent, TProjection, TContext> AsUpdateIfExistsOf(Func<TEvent, TKey> getKey)
+            {
+                if (getKey == null)
+                {
+                    throw new ArgumentNullException(nameof(getKey));
+                }
+
+                return new UpdateIfExistsEventActionBuilder(this, getKey);
+            }
+
+            public IUpdateIfExistsEventActionBuilder<TEvent, TProjection, TContext> AsUpdateIfExistsOf(Func<TEvent, TContext, TKey> getKey)
             {
                 if (getKey == null)
                 {
@@ -367,11 +440,16 @@ namespace LiquidProjections
                     ExistingProjectionModificationBehavior.Throw);
 
                 private readonly ProjectionEventMappingBuilder<TEvent> eventMappingBuilder;
-                private readonly Func<TEvent, TKey> getKey;
+                private readonly Func<TEvent, TContext, TKey> getKey;
 
                 public CreateEventActionBuilder(
                     ProjectionEventMappingBuilder<TEvent> eventMappingBuilder,
-                    Func<TEvent, TKey> getKey)
+                    Func<TEvent, TKey> getKey) : this(eventMappingBuilder, (@event, context) => getKey(@event))
+                { }
+
+                public CreateEventActionBuilder(
+                    ProjectionEventMappingBuilder<TEvent> eventMappingBuilder,
+                    Func<TEvent, TContext, TKey> getKey)
                 {
                     this.eventMappingBuilder = eventMappingBuilder;
                     this.getKey = getKey;
@@ -386,7 +464,7 @@ namespace LiquidProjections
 
                     eventMappingBuilder.innerBuilder.Add((anEvent, context) =>
                         eventMappingBuilder.eventMapBuilder.projectionModificationHandler(
-                            getKey(anEvent),
+                            getKey(anEvent, context),
                             context,
                             projection => projector(projection, anEvent, context),
                             options));
@@ -401,11 +479,16 @@ namespace LiquidProjections
                     ExistingProjectionModificationBehavior.Ignore);
 
                 private readonly ProjectionEventMappingBuilder<TEvent> eventMappingBuilder;
-                private readonly Func<TEvent, TKey> getKey;
+                private readonly Func<TEvent, TContext, TKey> getKey;
 
                 public CreateIfDoesNotExistEventActionBuilder(
                     ProjectionEventMappingBuilder<TEvent> eventMappingBuilder,
-                    Func<TEvent, TKey> getKey)
+                    Func<TEvent, TKey> getKey) : this(eventMappingBuilder, (@event, context) => getKey(@event))
+                { }
+
+                public CreateIfDoesNotExistEventActionBuilder(
+                    ProjectionEventMappingBuilder<TEvent> eventMappingBuilder,
+                    Func<TEvent, TContext, TKey> getKey)
                 {
                     this.eventMappingBuilder = eventMappingBuilder;
                     this.getKey = getKey;
@@ -420,7 +503,7 @@ namespace LiquidProjections
 
                     eventMappingBuilder.innerBuilder.Add((anEvent, context) =>
                         eventMappingBuilder.eventMapBuilder.projectionModificationHandler(
-                            getKey(anEvent),
+                            getKey(anEvent, context),
                             context,
                             projection => projector(projection, anEvent, context),
                             options));
@@ -435,11 +518,16 @@ namespace LiquidProjections
                     ExistingProjectionModificationBehavior.Update);
 
                 private readonly ProjectionEventMappingBuilder<TEvent> eventMappingBuilder;
-                private readonly Func<TEvent, TKey> getKey;
+                private readonly Func<TEvent, TContext, TKey> getKey;
 
                 public UpdateEventActionBuilder(
                     ProjectionEventMappingBuilder<TEvent> eventMappingBuilder,
-                    Func<TEvent, TKey> getKey)
+                    Func<TEvent, TKey> getKey) : this(eventMappingBuilder, (@event, context) => getKey(@event))
+                { }
+
+                public UpdateEventActionBuilder(
+                    ProjectionEventMappingBuilder<TEvent> eventMappingBuilder,
+                    Func<TEvent, TContext, TKey> getKey)
                 {
                     this.eventMappingBuilder = eventMappingBuilder;
                     this.getKey = getKey;
@@ -454,7 +542,7 @@ namespace LiquidProjections
 
                     eventMappingBuilder.innerBuilder.Add((anEvent, context) =>
                         eventMappingBuilder.eventMapBuilder.projectionModificationHandler(
-                            getKey(anEvent),
+                            getKey(anEvent, context),
                             context,
                             projection => projector(projection, anEvent, context),
                             options));
@@ -469,11 +557,16 @@ namespace LiquidProjections
                     ExistingProjectionModificationBehavior.Update);
 
                 private readonly ProjectionEventMappingBuilder<TEvent> eventMappingBuilder;
-                private readonly Func<TEvent, TKey> getKey;
+                private readonly Func<TEvent, TContext, TKey> getKey;
 
                 public UpdateIfExistsEventActionBuilder(
                     ProjectionEventMappingBuilder<TEvent> eventMappingBuilder,
-                    Func<TEvent, TKey> getKey)
+                    Func<TEvent, TKey> getKey) : this(eventMappingBuilder, (@event, context) => getKey(@event))
+                { }
+
+                public UpdateIfExistsEventActionBuilder(
+                    ProjectionEventMappingBuilder<TEvent> eventMappingBuilder,
+                    Func<TEvent, TContext, TKey> getKey)
                 {
                     this.eventMappingBuilder = eventMappingBuilder;
                     this.getKey = getKey;
@@ -488,7 +581,7 @@ namespace LiquidProjections
 
                     eventMappingBuilder.innerBuilder.Add((anEvent, context) =>
                         eventMappingBuilder.eventMapBuilder.projectionModificationHandler(
-                            getKey(anEvent),
+                            getKey(anEvent, context),
                             context,
                             projection => projector(projection, anEvent, context),
                             options));
@@ -503,11 +596,16 @@ namespace LiquidProjections
                     ExistingProjectionModificationBehavior.Update);
 
                 private readonly ProjectionEventMappingBuilder<TEvent> eventMappingBuilder;
-                private readonly Func<TEvent, TKey> getKey;
+                private readonly Func<TEvent, TContext, TKey> getKey;
 
                 public CreateOrUpdateEventActionBuilder(
                     ProjectionEventMappingBuilder<TEvent> eventMappingBuilder,
-                    Func<TEvent, TKey> getKey)
+                    Func<TEvent, TKey> getKey) : this(eventMappingBuilder, (@event, context) => getKey(@event))
+                { }
+
+                public CreateOrUpdateEventActionBuilder(
+                    ProjectionEventMappingBuilder<TEvent> eventMappingBuilder,
+                    Func<TEvent, TContext, TKey> getKey)
                 {
                     this.eventMappingBuilder = eventMappingBuilder;
                     this.getKey = getKey;
@@ -522,7 +620,7 @@ namespace LiquidProjections
 
                     eventMappingBuilder.innerBuilder.Add((anEvent, context) =>
                         eventMappingBuilder.eventMapBuilder.projectionModificationHandler(
-                            getKey(anEvent),
+                            getKey(anEvent, context),
                             context,
                             projection => projector(projection, anEvent, context),
                             options));
