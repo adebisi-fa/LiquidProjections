@@ -16,7 +16,6 @@ namespace LiquidProjections.Persistence
 
         public async Task SaveCheckpoint(string projectorId, long checkpoint)
         {
-            Console.WriteLine($"Saving checkpoint with value {checkpoint} for projector {projectorId}");
             await _projectionPersistence.SaveAsync(new ProjectorState
             {
                 Checkpoint = checkpoint,
@@ -27,7 +26,6 @@ namespace LiquidProjections.Persistence
 
         public async Task<ProjectorState> GetCheckpoint(string projectorId)
         {
-            Console.WriteLine($"Getting checkpoint for projector {projectorId}");
             return await _projectionPersistence.GetByIdAsync(projectorId);
         }
     }
