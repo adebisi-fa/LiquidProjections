@@ -122,5 +122,18 @@ namespace LiquidProjections
             CheckpointId = checkpointId;
             return this;
         }
+
+        public Projector WithChildren(params Projector[] children)
+        {
+            if (children.Any(c => c == this))
+                throw new Exception("Cannot nest a Projector in itself.");
+
+            var list = (this.children as List<Projector>);
+            foreach (var child in children)
+                if (!list.Contains(child))
+                    list.Add(child);
+
+            return this;
+        }
     }
 }
