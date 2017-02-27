@@ -247,7 +247,7 @@ namespace LiquidProjections.NEventStore
             return new Page(checkpoint, transactions);
         }
 
-        private Transaction ToTransaction(ICommit commit)
+        public static Transaction ToTransaction(ICommit commit)
         {
             return new Transaction
             {

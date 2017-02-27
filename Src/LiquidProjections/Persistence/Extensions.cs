@@ -4,21 +4,18 @@ namespace LiquidProjections.Persistence
 {
     public static class PersistenceExtensions
     {
-        public static Projector ToProjector<TProjection, TKey> (
-            this EventMapProjectionPersistenceConfigurator<TProjection, TKey> configurator,
-            ITrackingStore trackingStore, string checkpointId, params Projector[] children
-        ) where TProjection : class, IHaveIdentity<TKey>, new()
-        {
-            return new Projector(configurator.EventMapBuilder, children, trackingStore) { CheckpointId = checkpointId };
-        }
-
-        public static EventMapProjectionPersistenceConfigurator<TProjection, TKey> PersistWith<TProjection, TKey>(
-            this IEventMapBuilder<TProjection, TKey, ProjectionContext> mapBuilder,
-            IPersistenceFactory persistenceFactory
+        public static Projector ProjectTo<TProjection, TKey>(this IEventMapBuilder<TProjection, TKey, ProjectionContext> mapBuilder,
+            IPersistenceFactory persistenceFactory,
+            string trackingCheckpointId = null
         )
             where TProjection : class, IHaveIdentity<TKey>, new()
         {
-            return new EventMapProjectionPersistenceConfigurator<TProjection, TKey>(mapBuilder, persistenceFactory);
+            return new Projector(
+                new EventMapProjectionPersistenceConfigurator<TProjection, TKey>(mapBuilder, persistenceFactory).EventMapBuilder,
+                null,
+                new TrackingStore(persistenceFactory)
+            )
+            { CheckpointId = trackingCheckpointId ?? TrackingStore.DefaultCheckpointTrackingId };
         }
     }
 }

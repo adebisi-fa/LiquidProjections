@@ -19,7 +19,7 @@ namespace LiquidProjections
                 throw new ArgumentNullException(nameof(eventMapBuilder));
             }
 
-            // Null-check INTENTIONALLY avoided so as not to break existing API
+            // Null-check INTENTIONALLY avoided for API backward compatibility
             this.trackingStore = trackingStore;
 
             SetupHandlers(eventMapBuilder);
@@ -117,12 +117,6 @@ namespace LiquidProjections
             set { _checkpointId = value; }
         }
 
-        public Projector WithCheckpointId(string checkpointId)
-        {
-            CheckpointId = checkpointId;
-            return this;
-        }
-
         public Projector WithChildren(params Projector[] children)
         {
             if (children.Any(c => c == this))
@@ -130,8 +124,12 @@ namespace LiquidProjections
 
             var list = (this.children as List<Projector>);
             foreach (var child in children)
+            {
+                // Parent and children should project to the same tracking store!
+                child.CheckpointId = CheckpointId;
                 if (!list.Contains(child))
                     list.Add(child);
+            }
 
             return this;
         }

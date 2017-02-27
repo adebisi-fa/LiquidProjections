@@ -5,6 +5,8 @@ namespace LiquidProjections.Persistence
 {
     public class TrackingStore : ITrackingStore
     {
+        public static string DefaultCheckpointTrackingId = "DefaultCheckpointTrackingId";
+
         private readonly IPersistenceFactory _factory;
         private readonly IProjectionPersistence<ProjectorState, string> _projectionPersistence;
 
